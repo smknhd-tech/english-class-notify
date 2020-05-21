@@ -39,35 +39,46 @@ def main(day, max=5, config_file="config.txt"):
     date_re = re.compile(fr"{date} [0-9]{{2}}:[0-9]{{2}}")
 
     # 任意のリスト
-    FAVORITE_TEACHER_ID_MAP = {
+    FAVORITE_TEACHER_ID_MAP1 = {
         "29618": "Kylle",
         "36569": "Jena",
         "31562": "Zsei",
-        "37181": "Kye",
-        "37260": "Takuya",
-        "28319": "AG",
     }
-    messege = ""
-    for id, name in FAVORITE_TEACHER_ID_MAP.items():
-        # logger.info(f"name:{name}")
-        res = requests.get(f"{BASE_URL}{id}")
-        yoyakuka = re.compile(fr"{date}.*?予約可</a>")
-        yoyakuka_lessons = yoyakuka.findall(res.text)
+    FAVORITE_TEACHER_ID_MAP2 = {
+        "25336": "Louelle",
+        "35071": "Tamara",
+        "36755": "Alina",
+        "36846": "Allie",
+        "36775": "Celine",
+    }
 
-        if not yoyakuka_lessons:
-            continue
+    FAVORITE_TEACHER_ID_MAPS = [FAVORITE_TEACHER_ID_MAP1, FAVORITE_TEACHER_ID_MAP2]
 
-        lessons = "\n".join(
-            [
-                f"{date_re.search(lesson).group()}"
-                for lesson in yoyakuka_lessons[:3]
-                if date_re.search(lesson)
-            ]
-        )
-        messege += f"\n*Found {name} lessons!*\n {BASE_URL}{id} \n{lessons}\n"
+    USERS = ["KAZY", "YUKKY"]
+    for id_map, user in zip(FAVORITE_TEACHER_ID_MAPS, USERS):
+        messege = ""
+        for id, name in id_map.items():
+            # logger.info(f"name:{name}")
+            res = requests.get(f"{BASE_URL}{id}")
+            yoyakuka = re.compile(fr"{date}.*?予約可</a>")
+            yoyakuka_lessons = yoyakuka.findall(res.text)
 
-    if messege:
-        PythonNotify(messege, TOKEN)
+            if not yoyakuka_lessons:
+                continue
+
+            lessons = "\n".join(
+                [
+                    f"{date_re.search(lesson).group()}"
+                    for lesson in yoyakuka_lessons[:3]
+                    if date_re.search(lesson)
+                ]
+            )
+            messege += (
+                f"\n @{user} \n*Found {name} lessons!*\n {BASE_URL}{id} \n{lessons}\n"
+            )
+
+        if messege:
+            PythonNotify(messege + day.upper(), TOKEN)
 
 
 if __name__ == "__main__":
