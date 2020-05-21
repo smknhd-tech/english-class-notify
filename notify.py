@@ -21,7 +21,7 @@ def PythonNotify(message, token, img_path=""):
         requests.post(line_notify_api, data=payload, headers=headers, files=files)
 
 
-def main(day, max=5, config_file="config.txt"):
+def main(day, max_lessons=20, config_file="config.txt"):
     config = configparser.ConfigParser()
     config.read(config_file)
     TOKEN = config["DEFAULT"]["LINE_NOTIFY_TOKEN"]
@@ -36,13 +36,14 @@ def main(day, max=5, config_file="config.txt"):
     date = datetime.today() + timedelta(days=days)
     date = datetime.strftime(date, "%Y-%m-%d")
     print(f"search date: {date}")
-    date_re = re.compile(fr"{date} [0-9]{{2}}:[0-9]{{2}}")
+    date_re = re.compile(fr"[0-9]{{2}}:[0-9]{{2}}")
 
     # 任意のリスト
     FAVORITE_TEACHER_ID_MAP1 = {
         "29618": "Kylle",
         "36569": "Jena",
         "31562": "Zsei",
+        # "37260": "test",
     }
     FAVORITE_TEACHER_ID_MAP2 = {
         "25336": "Louelle",
@@ -66,19 +67,17 @@ def main(day, max=5, config_file="config.txt"):
             if not yoyakuka_lessons:
                 continue
 
-            lessons = "\n".join(
+            lessons = ", ".join(
                 [
                     f"{date_re.search(lesson).group()}"
-                    for lesson in yoyakuka_lessons[:3]
+                    for lesson in yoyakuka_lessons[:max_lessons]
                     if date_re.search(lesson)
                 ]
             )
-            messege += (
-                f"\n @{user} \n*Found {name} lessons!*\n {BASE_URL}{id} \n{lessons}\n"
-            )
+            messege += f"\n{BASE_URL}{id} \n{lessons}\n"
 
         if messege:
-            PythonNotify(messege + day.upper(), TOKEN)
+            PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
 
 
 if __name__ == "__main__":
