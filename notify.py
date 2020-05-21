@@ -4,11 +4,6 @@ import configparser
 from logzero import logger
 from datetime import datetime, date, timedelta
 
-config = configparser.ConfigParser()
-config.read("config.txt")
-TOKEN = config["DEFAULT"]["LINE_NOTIFY_TOKEN"]
-BASE_URL = config["DEFAULT"]["BASE_URL"]
-
 
 def PythonNotify(message, token, img_path=""):
     # 諸々の設定
@@ -26,7 +21,12 @@ def PythonNotify(message, token, img_path=""):
         requests.post(line_notify_api, data=payload, headers=headers, files=files)
 
 
-def main(day):
+def main(day, config_file="config.txt"):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    TOKEN = config["DEFAULT"]["LINE_NOTIFY_TOKEN"]
+    BASE_URL = config["DEFAULT"]["BASE_URL"]
+
     if day == "" or day == "today":
         days = 0
     elif day == "tomorrow":
@@ -73,5 +73,7 @@ if __name__ == "__main__":
     import sys
 
     args = sys.argv
-
-    main(args[1])
+    if len(args) >= 3:
+        main(args[1], args[2])
+    else:
+        main(args[1])
