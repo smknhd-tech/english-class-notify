@@ -38,7 +38,12 @@ def main(day, config_file="config.txt"):
     print(f"search date: {date}")
     date = re.compile(fr"{date} [0-9]{{1,2}}:[0-9]{{1,2}}")
     # 任意のリスト
-    FAVORITE_TEACHER_ID_MAP = {"29618": "Kylle", "36569": "Jena", "31562": "Zsei"}
+    FAVORITE_TEACHER_ID_MAP = {
+        "29618": "Kylle",
+        "36569": "Jena",
+        "31562": "Zsei",
+        "37181": "Kye",
+    }
     messege = ""
     for id, name in FAVORITE_TEACHER_ID_MAP.items():
         # logger.info(f"name:{name}")
@@ -62,11 +67,7 @@ def main(day, config_file="config.txt"):
         messege += f"\n*Found {name} lessons!*\n{lessons}\n"
 
     if messege:
-        # PythonNotify(messege)
-        print(messege)
-    PythonNotify("@Yuki Wakatsuki", TOKEN)
-    # 本日の予約がまだあったらお知らせしないようにする
-    # lessoの
+        PythonNotify(messege)
 
 
 if __name__ == "__main__":
