@@ -21,7 +21,7 @@ def PythonNotify(message, token, img_path=""):
         requests.post(line_notify_api, data=payload, headers=headers, files=files)
 
 
-def main(day, config_file="config.txt"):
+def main(day, max=5, config_file="config.txt"):
     config = configparser.ConfigParser()
     config.read(config_file)
     TOKEN = config["DEFAULT"]["LINE_NOTIFY_TOKEN"]
@@ -36,38 +36,38 @@ def main(day, config_file="config.txt"):
     date = datetime.today() + timedelta(days=days)
     date = datetime.strftime(date, "%Y-%m-%d")
     print(f"search date: {date}")
-    date = re.compile(fr"{date} [0-9]{{1,2}}:[0-9]{{1,2}}")
+    date_re = re.compile(fr"{date} [0-9]{{2}}:[0-9]{{2}}")
+
     # 任意のリスト
     FAVORITE_TEACHER_ID_MAP = {
         "29618": "Kylle",
         "36569": "Jena",
         "31562": "Zsei",
         "37181": "Kye",
+        "37260": "Takuya",
+        "28319": "AG",
     }
     messege = ""
     for id, name in FAVORITE_TEACHER_ID_MAP.items():
         # logger.info(f"name:{name}")
         res = requests.get(f"{BASE_URL}{id}")
-        yoyakuka = re.compile(rf"<a href.*?.*?予約可</a>")
+        yoyakuka = re.compile(fr"{date}.*?予約可</a>")
         yoyakuka_lessons = yoyakuka.findall(res.text)
 
-        print(yoyakuka_lessons)
         if not yoyakuka_lessons:
-            resp = re.findall(r".{500}予約可</a>.{10}", res.text)
             continue
 
         lessons = "\n".join(
             [
-                f"{date.search(lesson).group()} {BASE_URL}{id}"
-                if date.search(lesson)
-                else ""
-                for lesson in yoyakuka_lessons
+                f"{date_re.search(lesson).group()}"
+                for lesson in yoyakuka_lessons[:3]
+                if date_re.search(lesson)
             ]
         )
-        messege += f"\n*Found {name} lessons!*\n{lessons}\n"
+        messege += f"\n*Found {name} lessons!*\n {BASE_URL}{id} \n{lessons}\n"
 
     if messege:
-        PythonNotify(messege)
+        PythonNotify(messege, TOKEN)
 
 
 if __name__ == "__main__":
@@ -75,6 +75,6 @@ if __name__ == "__main__":
 
     args = sys.argv
     if len(args) >= 3:
-        main(args[1], args[2])
+        main(args[1], config_file=args[2])
     else:
         main(args[1])
