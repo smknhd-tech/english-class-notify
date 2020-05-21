@@ -43,6 +43,7 @@ def main(day, max=5, config_file="config.txt"):
         "29618": "Kylle",
         "36569": "Jena",
         "31562": "Zsei",
+        "28319": "AG",
     }
     FAVORITE_TEACHER_ID_MAP2 = {
         "25336": "Louelle",
