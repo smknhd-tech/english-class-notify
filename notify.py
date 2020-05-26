@@ -43,12 +43,13 @@ def main(day, max_lessons=20, config_file="config.txt"):
         "29618": "Kylle",
         "36569": "Jena",
         "31562": "Zsei",
-        # "37260": "test",
+        "32218": "Jusmyn",
+        "31574": "Zenn",
     }
     FAVORITE_TEACHER_ID_MAP2 = {
         "25336": "Louelle",
         "35071": "Tamara",
-        "36755": "Alina",
+        # "36755": "Alina",
         "36846": "Allie",
         "36775": "Celine",
     }
