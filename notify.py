@@ -25,7 +25,7 @@ def main(day, max_lessons=20, config_file="config.txt"):
     config = configparser.ConfigParser()
     config.read(config_file)
     TOKEN = config["DEFAULT"]["LINE_NOTIFY_TOKEN"]
-    BASE_URL = config["DEFAULT"]["BASE_URL"]
+    TUTORS_URL = config["DEFAULT"]["TUTORS_URL"]
 
     if day == "" or day == "today":
         days = 0
@@ -61,7 +61,7 @@ def main(day, max_lessons=20, config_file="config.txt"):
         messege = ""
         for id, name in id_map.items():
             # logger.info(f"name:{name}")
-            res = requests.get(f"{BASE_URL}{id}")
+            res = requests.get(f"{TUTORS_URL}{id}")
             yoyakuka = re.compile(fr"{date}.*?予約可</a>")
             yoyakuka_lessons = yoyakuka.findall(res.text)
 
@@ -75,7 +75,7 @@ def main(day, max_lessons=20, config_file="config.txt"):
                     if date_re.search(lesson)
                 ]
             )
-            messege += f"\n{BASE_URL}{id} \n{lessons}\n"
+            messege += f"\n{TUTORS_URL}{id} \n{lessons}\n"
 
         if messege:
             PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)

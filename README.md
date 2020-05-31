@@ -22,5 +22,5 @@ $ poetry run python notify.py today ../config.txt
 ```
 [DEFAULT]
 LINE_NOTIFY_TOKEN = XXXXXXXXXXXXXXXX
-BASE_URL = https://XXXXXXXXXXXXXXXXXXXX
+TUTORS_URL = https://XXXXXXXXXXXXXXXXXXXX
 ```
