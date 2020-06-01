@@ -2,6 +2,9 @@
 
 `notify.py` checks tutor's scheduale and notify you via LINE Notify.
 
+# VS.
+- [dmm-eikaiwa-tsc](https://github.com/oinume/dmm-eikaiwa-tsc/)
+
 # Requirement
 - Python
 - [poetry](https://cocoatomo.github.io/poetry-ja/)
