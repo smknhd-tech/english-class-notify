@@ -2,6 +2,9 @@
 
 `notify.py` checks tutor's scheduale and notify you via LINE Notify.
 
+# VS.
+- [dmm-eikaiwa-tsc](https://github.com/oinume/dmm-eikaiwa-tsc/)
+
 # Requirement
 - Python
 - [poetry](https://cocoatomo.github.io/poetry-ja/)
@@ -22,5 +25,5 @@ $ poetry run python notify.py today ../config.txt
 ```
 [DEFAULT]
 LINE_NOTIFY_TOKEN = XXXXXXXXXXXXXXXX
-BASE_URL = https://XXXXXXXXXXXXXXXXXXXX
+TUTORS_URL = https://XXXXXXXXXXXXXXXXXXXX
 ```
