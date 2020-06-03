@@ -22,8 +22,8 @@ $ poetry run python notify.py today ../config.txt
 
 ## Via Docker 
 ```
-$ docker build -t notifyimage . 
-$ docker run -it notifyimage poetry run python -m notify today config.txt
+$ docker build -t notifyimage:tag .
+$ docker run -it --rm notifyimage:tag today config.txt
 ```
 
 # Config File Example
