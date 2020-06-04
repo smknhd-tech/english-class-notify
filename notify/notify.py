@@ -26,6 +26,7 @@ def main(day, max_lessons=20, config_file="config.txt"):
     config.read(config_file)
     TOKEN = config["DEFAULT"]["LINE_NOTIFY_TOKEN"]
     TUTORS_URL = config["DEFAULT"]["TUTORS_URL"]
+    SUBMIT_MESSAGE = config["DEFAULT"]["SUBMIT_MESSAGE"]
 
     if day == "" or day == "today":
         days = 0
@@ -75,7 +76,7 @@ def main(day, max_lessons=20, config_file="config.txt"):
                     if date_re.search(lesson)
                 ]
             )
-            messege += f"\n{TUTORS_URL}{id} \n{lessons}\n"
+            messege += f"\n{TUTORS_URL}{id} \n{lessons} \n{SUBMIT_MESSAGE}\n"
 
         if messege:
             PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
