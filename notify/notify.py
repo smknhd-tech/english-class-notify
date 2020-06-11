@@ -59,6 +59,13 @@ def main(day, max_lessons=20, config_file="config.txt"):
     USERS = ["KAZY", "YUKKY"]
     for id_map, user in zip(FAVORITE_TEACHER_ID_MAPS, USERS):
         messege = ""
+        CONTENT_PATH = '/tmp/app/db/instead-db-tmp-for-' + user + '.txt'
+        try:
+            with open(CONTENT_PATH, mode='x') as f:
+                f.write('')
+        except FileExistsError:
+            pass
+
         for id, name in id_map.items():
             # logger.info(f"name:{name}")
             res = requests.get(f"{TUTORS_URL}{id}")
@@ -78,7 +85,13 @@ def main(day, max_lessons=20, config_file="config.txt"):
             messege += f"\n{TUTORS_URL}{id} \n{lessons}\n"
 
         if messege:
-            PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
+            with open(CONTENT_PATH) as fr:
+                file_content = fr.read()
+            
+            if file_content != messege:
+                with open(CONTENT_PATH, mode='w') as fw:
+                    fw.write(file_content)
+                PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
 
 
 if __name__ == "__main__":
