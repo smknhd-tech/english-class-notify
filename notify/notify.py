@@ -90,7 +90,7 @@ def main(day, max_lessons=20, config_file="config.txt"):
             
             if file_content != messege:
                 with open(CONTENT_PATH, mode='w') as fw:
-                    fw.write(file_content)
+                    fw.write(messege)
                 PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
 
 
