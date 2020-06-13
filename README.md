@@ -32,4 +32,5 @@ $ docker run -it --rm --mount type=volume,src=english-class-notify-instead-db-tm
 [DEFAULT]
 LINE_NOTIFY_TOKEN = XXXXXXXXXXXXXXXX
 TUTORS_URL = https://XXXXXXXXXXXXXXXXXXXX
+SUBMIT_MESSAGE = ○○先生の講義の空き時間
 ```
