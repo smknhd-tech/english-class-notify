@@ -1,9 +1,16 @@
-FROM python:3.8
+FROM python:3.8-slim
 
-RUN apt update \
-    curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python \
-    source $HOME/.poetry/env \
-    git clone https://github.com/KAZYPinkSaurus/kazy-english-class-notify.git \
-    cd kazy-english-class-notify\
-    poetry install \
-    touch config.txt \
+WORKDIR /tmp/app
+
+COPY pyproject.toml ./ \
+    poetry.lock ./
+
+RUN pip install poetry \
+    && poetry config virtualenvs.create false \
+    && poetry install
+
+COPY config.txt ./ \ 
+    notify/ ./notify/
+
+ENTRYPOINT ["poetry", "run", "python", "-m", "notify.notify"]
+CMD ["config.txt", "today"]
