@@ -63,8 +63,10 @@ def main(day, max_lessons=20, config_file="config.txt"):
         try:
             with open(CONTENT_PATH, mode='x') as f:
                 f.write('')
+                file_content = ''
         except FileExistsError:
-            pass
+            with open(CONTENT_PATH) as fr:
+                file_content = fr.read()
 
         for id, name in id_map.items():
             # logger.info(f"name:{name}")
@@ -84,14 +86,10 @@ def main(day, max_lessons=20, config_file="config.txt"):
             )
             messege += f"\n{TUTORS_URL}{id} \n{lessons}\n"
 
-        if messege:
-            with open(CONTENT_PATH) as fr:
-                file_content = fr.read()
-            
-            if file_content != messege:
-                with open(CONTENT_PATH, mode='w') as fw:
-                    fw.write(messege)
-                PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
+        if messege and messege != file_content:
+            with open(CONTENT_PATH, mode='w') as fw:
+                fw.write(messege)
+            PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
 
 
 if __name__ == "__main__":
