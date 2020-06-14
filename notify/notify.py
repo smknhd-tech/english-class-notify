@@ -14,19 +14,24 @@ def PythonNotify(message, token, img_path=""):
     payload = {"message": message}
     # 画像を含むか否か
     if img_path == "":
-        requests.post(line_notify_api, data=payload, headers=headers)
+        res = requests.post(line_notify_api, data=payload, headers=headers)
+
     else:
         # 画像
         files = {"imageFile": open(img_path, "rb")}
-        requests.post(line_notify_api, data=payload, headers=headers, files=files)
+        res = requests.post(line_notify_api, data=payload, headers=headers, files=files)
+    return res
 
 
 def main(day, max_lessons=20, config_file="config.txt"):
     config = configparser.ConfigParser()
     config.read(config_file)
-    TOKEN = config["DEFAULT"]["LINE_NOTIFY_TOKEN"]
-    TUTORS_URL = config["DEFAULT"]["TUTORS_URL"]
+    TOKEN = config["LINE NOTIFY"]["TOKEN"]
+    TUTORS_URL = config["SITE INFO"]["URL"]
     SUBMIT_MESSAGE = config["DEFAULT"]["SUBMIT_MESSAGE"]
+    TUTORS_NAME_ID_MAP = config["TUTORS"]
+    USER_NAME = config["USER INFO"]["NAME"]
+    CONTENT_REC_PATH = f"/tmp/app/db/instead-db-tmp-for-{USER_NAME}.txt"
 
     if day == "" or day == "today":
         days = 0
@@ -36,61 +41,40 @@ def main(day, max_lessons=20, config_file="config.txt"):
         days = int(day)
     date = datetime.today() + timedelta(days=days)
     date = datetime.strftime(date, "%Y-%m-%d")
-    print(f"search date: {date}")
+    logger.info("Search date: %s", date)
     date_re = re.compile(fr"[0-9]{{2}}:[0-9]{{2}}")
+    message = ""
+    try:
+        with open(CONTENT_REC_PATH, mode="x") as f:
+            f.write("")
+            file_content = ""
+    except FileExistsError:
+        with open(CONTENT_REC_PATH) as fr:
+            file_content = fr.read()
+    logger.info("前回のメッセージ: %s", file_content)
+    for name, id in TUTORS_NAME_ID_MAP.items():
+        res = requests.get(f"{TUTORS_URL}{id}")
+        yoyakuka = re.compile(fr"{date}.*?予約可</a>")
+        yoyakuka_lessons = yoyakuka.findall(res.text)
 
-    # 任意のリスト
-    FAVORITE_TEACHER_ID_MAP1 = {
-        "29618": "Kylle",
-        "36569": "Jena",
-        "31562": "Zsei",
-        "32218": "Jusmyn",
-        "31574": "Zenn",
-    }
-    FAVORITE_TEACHER_ID_MAP2 = {
-        "25336": "Louelle",
-        "35071": "Tamara",
-        # "36755": "Alina",
-        "36846": "Allie",
-        "36775": "Celine",
-    }
+        if not yoyakuka_lessons:
+            continue
 
-    FAVORITE_TEACHER_ID_MAPS = [FAVORITE_TEACHER_ID_MAP1, FAVORITE_TEACHER_ID_MAP2]
-
-    USERS = ["KAZY", "YUKKY"]
-    for id_map, user in zip(FAVORITE_TEACHER_ID_MAPS, USERS):
-        messege = ""
-        CONTENT_REC_PATH = '/tmp/app/db/instead-db-tmp-for-' + user + '.txt'
-        try:
-            with open(CONTENT_REC_PATH, mode='x') as f:
-                f.write('')
-                file_content = ''
-        except FileExistsError:
-            with open(CONTENT_REC_PATH) as fr:
-                file_content = fr.read()
-
-        for id, name in id_map.items():
-            # logger.info(f"name:{name}")
-            res = requests.get(f"{TUTORS_URL}{id}")
-            yoyakuka = re.compile(fr"{date}.*?予約可</a>")
-            yoyakuka_lessons = yoyakuka.findall(res.text)
-
-            if not yoyakuka_lessons:
-                continue
-
-            lessons = ", ".join(
-                [
-                    f"{date_re.search(lesson).group()}"
-                    for lesson in yoyakuka_lessons[:max_lessons]
-                    if date_re.search(lesson)
-                ]
-            )
-            messege += f"\n{TUTORS_URL}{id} \n{lessons} \n{SUBMIT_MESSAGE}\n"
-
-        if messege and messege != file_content:
-            with open(CONTENT_REC_PATH, mode='w') as fw:
-                fw.write(messege)
-            PythonNotify(f"@{user}" + messege + day.upper(), TOKEN)
+        lessons = ", ".join(
+            [
+                f"{date_re.search(lesson).group()}"
+                for lesson in yoyakuka_lessons[:max_lessons]
+                if date_re.search(lesson)
+            ]
+        )
+        message += f"\n{TUTORS_URL}{id} \n{lessons} \n"
+    message += f"{SUBMIT_MESSAGE}\n"
+    logger.info("今回のメッセージ:%s", message)
+    if message != file_content:
+        with open(CONTENT_REC_PATH, mode="w") as fw:
+            fw.write(message)
+        res = PythonNotify(f"@{USER_NAME}" + message + day.upper(), TOKEN)
+        logger.info("LINE通知:%s", res)
 
 
 if __name__ == "__main__":
