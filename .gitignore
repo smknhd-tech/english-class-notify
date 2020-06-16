@@ -1,2 +1,3 @@
 config.txt
-.vscode/settings.json
+.vscode
+__pycache__
