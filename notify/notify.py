@@ -15,7 +15,6 @@ def PythonNotify(message, token, img_path=""):
     # 画像を含むか否か
     if img_path == "":
         res = requests.post(line_notify_api, data=payload, headers=headers)
-
     else:
         # 画像
         files = {"imageFile": open(img_path, "rb")}
@@ -26,11 +25,11 @@ def PythonNotify(message, token, img_path=""):
 def main(day, max_lessons=20, config_file="config.txt"):
     config = configparser.ConfigParser()
     config.read(config_file)
-    TOKEN = config["LINE NOTIFY"]["TOKEN"]
     TUTORS_URL = config["SITE INFO"]["URL"]
-    SUBMIT_MESSAGE = config["DEFAULT"]["SUBMIT_MESSAGE"]
-    TUTORS_NAME_ID_MAP = config["TUTORS"]
+    TOKEN = config["LINE NOTIFY"]["TOKEN"]
+    SUBMIT_MESSAGE = config["LINE NOTIFY"]["SUBMIT_MESSAGE"]
     USER_NAME = config["USER INFO"]["NAME"]
+    TUTORS_NAME_ID_MAP = config["TUTORS"]
     CONTENT_REC_PATH = f"/tmp/app/db/instead-db-tmp-for-{USER_NAME}.txt"
 
     if day == "" or day == "today":

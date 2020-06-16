@@ -29,17 +29,15 @@ $ docker run --rm --mount type=volume,src=english-class-notify-instead-db-tmp,ds
 # Config File Example
 
 ```
-[DEFAULT]
-SUBMIT_MESSAGE = XXXXX
-
-[USER INFO]
-NAME=XXXX
-
 [SITE INFO]
 URL = XXXXX
 
 [LINE NOTIFY]
 TOKEN = XXXXX
+SUBMIT_MESSAGE = XXXXX
+
+[USER INFO]
+NAME=XXXX
 
 [TUTORS]
 # name id
