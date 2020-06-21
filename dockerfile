@@ -12,4 +12,4 @@ RUN pip install poetry \
 COPY notify/ ./notify/
 
 ENTRYPOINT ["poetry", "run", "python", "-m", "notify.notify"]
-CMD ["today"]
+CMD ["today", "config.txt"]

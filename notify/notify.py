@@ -80,4 +80,7 @@ if __name__ == "__main__":
     import sys
 
     args = sys.argv
-    main(args[1])
+    if len(args) >= 3:
+        main(args[1], config_file="conf/" + args[2])
+    else:
+        main(args[1])
