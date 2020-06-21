@@ -22,7 +22,7 @@ def PythonNotify(message, token, img_path=""):
     return res
 
 
-def main(day, max_lessons=20, config_file="config.txt"):
+def main(day, max_lessons=20, config_file="conf/config.txt"):
     config = configparser.ConfigParser()
     config.read(config_file)
     TUTORS_URL = config["SITE INFO"]["URL"]
@@ -81,6 +81,6 @@ if __name__ == "__main__":
 
     args = sys.argv
     if len(args) >= 3:
-        main(args[1], config_file=args[2])
+        main(args[1], config_file="conf/" + args[2])
     else:
         main(args[1])

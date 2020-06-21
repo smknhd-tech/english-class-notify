@@ -9,8 +9,7 @@ RUN pip install poetry \
     && poetry config virtualenvs.create false \
     && poetry install
 
-COPY config.txt ./ \ 
-    notify/ ./notify/
+COPY notify/ ./notify/
 
 ENTRYPOINT ["poetry", "run", "python", "-m", "notify.notify"]
-CMD ["config.txt", "today"]
+CMD ["today", "config.txt"]

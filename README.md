@@ -23,7 +23,10 @@ $ poetry run python notify.py today ../config.txt
 ## Via Docker 
 ```
 $ docker build -t notifyimage:tag .
-$ docker run --rm --mount type=volume,src=english-class-notify-instead-db-tmp,dst=/tmp/app/db notifyimage:tag today config.txt
+$ docker run --rm \
+--mount type=volume,src=english-class-notify-instead-db-tmp,dst=/tmp/app/db \
+--mount type=bind,src="$(pwd)"/conf,dst=/tmp/app/conf \
+notifyimage:(tag) today config.txt
 ```
 
 # Config File Example
