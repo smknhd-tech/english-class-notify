@@ -22,6 +22,7 @@ def PythonNotify(message, token, img_path=""):
     return res
 
 
+# 最大表示数を20としたのは20以上のクラスが表示されると通知が長くなりすぎると思ったため
 def main(day, max_lessons=20, config_file="conf/config.txt"):
     config = configparser.ConfigParser()
     config.read(config_file)
@@ -31,13 +32,15 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
     USER_NAME = config["USER INFO"]["NAME"]
     TUTORS_NAME_ID_MAP = config["TUTORS"]
     CONTENT_REC_PATH = f"/tmp/app/db/instead-db-tmp-for-{USER_NAME}.txt"
-
+    # today tomorrw といった引数を許容させたのは今日から何日後という意味で数字を引数をすると使いにくと考えたため
+    # 数値変換しているのはtimedeltaを用いて日付の演算を行うため
     if day == "" or day == "today":
         days = 0
     elif day == "tomorrow":
         days = 1
     else:
         days = int(day)
+    # 過去は予約不可能であるため 今日から何日後 を指定させるのが使い勝手が良いかなと思ったため
     date = datetime.today() + timedelta(days=days)
     date = datetime.strftime(date, "%Y-%m-%d")
     logger.info("Search date: %s", date)
@@ -53,6 +56,8 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
     logger.info("前回のメッセージ: %s", file_content)
     for name, id in TUTORS_NAME_ID_MAP.items():
         res = requests.get(f"{TUTORS_URL}{id}")
+        # 予約ページへのリンクを予約可能の判定条件としているため
+        # パターンに日付を加えているのは対象としている日のみを抽出するため
         yoyakuka = re.compile(fr"{date}.*?予約可</a>")
         yoyakuka_lessons = yoyakuka.findall(res.text)
 
@@ -72,7 +77,9 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
     if message != file_content:
         with open(CONTENT_REC_PATH, mode="w") as fw:
             fw.write(message)
+        # 大文字変換はtoday tomorrowよりTODAY TOMORROWのほうが見やすいかなと思ったため
         res = PythonNotify(f"@{USER_NAME}" + message + day.upper(), TOKEN)
+        # HTTP レスポンスステータスコードをログとして残しておくと障害対応が行いやすくなるため
         logger.info("LINE通知:%s", res)
 
 
