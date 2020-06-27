@@ -67,6 +67,8 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
             ]
         )
         message += f"\n{TUTORS_URL}{id} \n{lessons} \n"
+    if message == "":
+        message += "\n予約可能枠なし\n"
     message += f"{SUBMIT_MESSAGE}\n"
     logger.info("今回のメッセージ:%s", message)
     if message != file_content:
