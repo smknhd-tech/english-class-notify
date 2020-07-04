@@ -22,7 +22,7 @@ $ poetry run python notify.py today ../config.txt
 
 ## Via Docker 
 ```
-$ docker build -t notifyimage:tag .
+$ docker build -t notifyimage:(tag) -f .docker/containers/app/Dockerfile .
 $ docker run --rm \
 --mount type=volume,src=english-class-notify-instead-db-tmp,dst=/tmp/app/db \
 --mount type=bind,src="$(pwd)"/conf,dst=/tmp/app/conf \
