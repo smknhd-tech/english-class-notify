@@ -13,6 +13,7 @@ def PythonNotify(message, token, img_path=""):
     if img_path == "":
         res = requests.post(line_notify_api, data=payload, headers=headers)
     else:
+        # TODO: This is used to send the analized image.
         files = {"imageFile": open(img_path, "rb")}
         res = requests.post(line_notify_api, data=payload, headers=headers, files=files)
     return res
