@@ -5,17 +5,14 @@ from logzero import logger
 from datetime import datetime, date, timedelta
 
 
-def PythonNotify(message, token, img_path=""):
+def post_line_notify(message, token, img_path=None):
     line_notify_api = "https://notify-api.line.me/api/notify"
     line_notify_token = token
     headers = {"Authorization": "Bearer " + line_notify_token}
     payload = {"message": message}
-    if img_path == "":
-        res = requests.post(line_notify_api, data=payload, headers=headers)
-    else:
-        # TODO: This is used to send the analized image.
-        files = {"imageFile": open(img_path, "rb")}
-        res = requests.post(line_notify_api, data=payload, headers=headers, files=files)
+    # TODO: This is used to send the analized image.
+    files = None if img_path is None else {"imageFile": open(img_path, "rb")}
+    res = requests.post(line_notify_api, data=payload, headers=headers, files=files)
     return res
 
 
@@ -77,7 +74,7 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
         with open(CONTENT_REC_PATH, mode="w") as fw:
             fw.write(message)
         # the upper case "TODAY","TOMORROW" looks better than the lower case "today", "tomorrow"
-        res = PythonNotify(f"@{USER_NAME}" + message + day.upper(), TOKEN)
+        res = post_line_notify(f"@{USER_NAME}" + message + day.upper(), TOKEN)
         # The HTTP response status code will be good a log to fix problem
         logger.info("LINE通知:%s", res)
 
