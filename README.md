@@ -8,6 +8,7 @@
 # Requirement
 - Python
 - [poetry](https://cocoatomo.github.io/poetry-ja/)
+- [pytest](https://pypi.org/project/pytest/)
 
 # Usage
 
@@ -27,6 +28,11 @@ $ docker run --rm \
 --mount type=volume,src=english-class-notify-instead-db-tmp,dst=/tmp/app/db \
 --mount type=bind,src="$(pwd)"/conf,dst=/tmp/app/conf \
 notifyimage:(tag) today config.txt
+```
+
+## Test
+```
+$ pytest tests/test_notify.py -v
 ```
 
 # Config File Example
