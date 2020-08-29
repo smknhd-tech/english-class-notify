@@ -31,8 +31,14 @@ notifyimage:(tag) today config.txt
 ```
 
 ## Test
+### Via Docker
 ```
-$ pytest tests/test_notify.py -v
+$ docker run --env LINE_NOTIFY_TOKEN_TEST=anylinenotifytoken --rm --entrypoint=pytest notifyimage:latest -v
+```
+### Via Terminal
+```
+$ export LINE_NOTIFY_TOKEN_TEST=anylinenotifytoken
+$ pytest -v
 ```
 
 # Config File Example

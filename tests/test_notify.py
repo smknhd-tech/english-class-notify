@@ -1,3 +1,4 @@
+import os
 from notify.notify import post_line_notify
 from unittest import mock
 import pytest
@@ -16,9 +17,6 @@ def test_post_line_notify_invalid_token():
 
 
 def test_post_line_notify_valid_token():
-    class Response(NamedTuple):
-        status_code: int
-
-    requests.post = mock.Mock(return_value=Response(200))
-    response = post_line_notify(message="test", token="valid_token")
+    response = post_line_notify(message="test", token=os.environ.get('LINE_NOTIFY_TOKEN_TEST'))
     assert response.status_code == 200
+

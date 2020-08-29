@@ -1,0 +1,16 @@
+name: Test
+
+on: [push]
+
+jobs:
+  build_and_test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image 
+      run: docker build -t notifyimage:latest -f .docker/containers/app/Dockerfile .
+    - name: Test with pytest
+      run: docker run --env LINE_NOTIFY_TOKEN_TEST=${{secrets.LINE_NOTIFY_TOKEN_DEV}} --rm --entrypoint=pytest notifyimage:latest -v
+
