@@ -1,6 +1,7 @@
 import re
 import requests
 import configparser
+# import psycopg2
 from logzero import logger
 from datetime import datetime, date, timedelta
 
@@ -41,6 +42,14 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
     # to extract lesson time
     time_re = re.compile(fr"[0-9]{{2}}:[0-9]{{2}}")
     message = ""
+
+    # dbname = "english-class-notify-db"
+    # connection = psycopg2.connect("host=postgres dbname=" + dbname + " user=root password=root")
+    # cur = conn.cursor()
+    # cur.execute('SELECT content_of_message FROM public.submit_messages LIMIT 1 ORDER BY submitted_time DESC')
+    # results = cur.fetchall()
+    # print("results: " + results)
+    
     try:
         with open(CONTENT_REC_PATH, mode="x") as f:
             f.write("")
@@ -48,6 +57,8 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
     except FileExistsError:
         with open(CONTENT_REC_PATH) as fr:
             file_content = fr.read()
+
+
     logger.info("前回のメッセージ: %s", file_content)
     for name, id in TUTORS_NAME_ID_MAP.items():
         res = requests.get(f"{TUTORS_URL}{id}")
@@ -77,6 +88,8 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
         res = post_line_notify(f"@{USER_NAME}" + message + day.upper(), TOKEN)
         # The HTTP response status code will be good a log to fix problem
         logger.info("LINE通知:%s", res)
+    # cur.close()
+    # conn.close()
 
 
 if __name__ == "__main__":

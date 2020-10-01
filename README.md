@@ -28,6 +28,12 @@ $ docker run --rm \
 --mount type=volume,src=english-class-notify-instead-db-tmp,dst=/tmp/app/db \
 --mount type=bind,src="$(pwd)"/conf,dst=/tmp/app/conf \
 notifyimage:(tag) today config.txt
+
+$ docker-compose build
+$ docker-compose up -d
+
+$ make start
+$ docker-compose run app today config.txt
 ```
 
 ## Test
@@ -59,3 +65,15 @@ NAME=XXXX
 tutor1 = 12345
 tutor2 = 54321
 ```
+
+# Tips
+- `docker compose up -d` 後に、http://localhost にアクセスで、pgAdmin使用可能。
+    - サーバへの接続情報は次。
+        ```
+        ホスト名/アドレス:db
+        ポート番号:5432
+        データベースの管理:postgres
+        ユーザ名:root
+        パスワード:root
+        ```
+- 
