@@ -23,15 +23,6 @@ $ poetry run python notify.py today ../config.txt
 
 ## Via Docker 
 ```
-$ docker build -t notifyimage:(tag) -f .docker/containers/app/Dockerfile .
-$ docker run --rm \
---mount type=volume,src=english-class-notify-instead-db-tmp,dst=/tmp/app/db \
---mount type=bind,src="$(pwd)"/conf,dst=/tmp/app/conf \
-notifyimage:(tag) today config.txt
-
-$ docker-compose build
-$ docker-compose up -d
-
 $ make start
 $ docker-compose run app today config.txt
 ```
@@ -67,7 +58,8 @@ tutor2 = 54321
 ```
 
 # Tips
-- `docker compose up -d` 後に、http://localhost にアクセスで、pgAdmin使用可能。
+- `make start` 後に、http://localhost にアクセスで、pgAdmin使用可能。
+    - pgAdminの認証情報　root@root / root
     - サーバへの接続情報は次。
         ```
         ホスト名/アドレス:db
@@ -76,4 +68,5 @@ tutor2 = 54321
         ユーザ名:root
         パスワード:root
         ```
+- DBの永続化データを初期化したい場合は、./db_data以下を削除すること
 - 

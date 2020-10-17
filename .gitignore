@@ -1,3 +1,4 @@
 config.txt
 .vscode
 __pycache__
+db_data

@@ -4,13 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./.docker/containers/app/Dockerfile
-    restart: always
     volumes:
-      - type: volume
-        source: english-class-notify-instead-db-tmp
-        target: /tmp/app/db
-        volume:
-          nocopy: true
       - type: bind
         source: ./conf
         target: /tmp/app/conf
@@ -34,6 +28,7 @@ services:
     hostname: postgres
     volumes:
       - ./.docker/containers/db/scripts/initdb:/docker-entrypoint-initdb.d
+      - ./db_data/postgresql:/var/lib/postgresql/data
     networks:
       - app-net
   
@@ -42,17 +37,16 @@ services:
     container_name: pgadmin4
     ports:
       - 80:80
-    # volumes:
-    #   - ./pgadmin:/var/lib/pgadmin/storage
+    volumes:
+      - ./db_data/pgadmin:/var/lib/pgadmin/storage
     environment:
       PGADMIN_DEFAULT_EMAIL: root@root
       PGADMIN_DEFAULT_PASSWORD: root
     hostname: pgadmin4
     restart: always
+    networks:
+      - app-net
 
 networks:
   app-net:
     driver: bridge
-
-volumes:
-  english-class-notify-instead-db-tmp:
