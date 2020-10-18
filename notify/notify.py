@@ -22,7 +22,7 @@ def get_db_connection():
     host = "postgres"
     port = "5432"
     dbname = "english-class-notify-db"
-    dsn = "postgresql://" + user + ":" + pw + "@" + host + ":" + port + "/" + dbname
+    dsn = f"postgresql://{user}:{pw}@{host}:{port}/{dbname}"
     return psycopg2.connect(dsn)
 
 # Because display more than 20 lessons is too much
@@ -58,7 +58,7 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
         with conn.cursor() as cur:
             cur.execute(get_last_message)
             res_get_last_message = cur.fetchone()
-            if res_get_last_message != None:
+            if res_get_last_message is not None:
                 last_message = res_get_last_message[0]
     logger.info("前回のメッセージ: %s", last_message)
 
