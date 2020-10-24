@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./.docker/containers/app/Dockerfile
+    volumes:
+      - type: bind
+        source: ./conf
+        target: /tmp/app/conf
+
+  db:
+    image: postgres:13-alpine
+    container_name: postgres
+    # build:
+    #   context: .
+    #   dockerfile: ./.docker/containers/db/Dockerfile
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      POSTGRES_DB: english-class-notify-db
+    hostname: postgres
+    volumes:
+      - ./.docker/containers/db/scripts/initdb:/docker-entrypoint-initdb.d
+      - ./db_data/postgresql:/var/lib/postgresql/data
+  
+  pgadmin4:
+    image: dpage/pgadmin4:4.26
+    container_name: pgadmin4
+    ports:
+      - 80:80
+    volumes:
+      - ./db_data/pgadmin:/var/lib/pgadmin/storage
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@root
+      PGADMIN_DEFAULT_PASSWORD: root
+    hostname: pgadmin4
+    restart: always

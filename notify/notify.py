@@ -1,6 +1,7 @@
 import re
 import requests
 import configparser
+import psycopg2
 from logzero import logger
 from datetime import datetime, date, timedelta
 
@@ -15,6 +16,14 @@ def post_line_notify(message, token, img_path=None):
     res = requests.post(line_notify_api, data=payload, headers=headers, files=files)
     return res
 
+def get_db_connection():
+    user = "root"
+    pw = "root"
+    host = "postgres"
+    port = "5432"
+    dbname = "english-class-notify-db"
+    dsn = f"postgresql://{user}:{pw}@{host}:{port}/{dbname}"
+    return psycopg2.connect(dsn)
 
 # Because display more than 20 lessons is too much
 def main(day, max_lessons=20, config_file="conf/config.txt"):
@@ -25,7 +34,7 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
     SUBMIT_MESSAGE = config["LINE NOTIFY"]["SUBMIT_MESSAGE"]
     USER_NAME = config["USER INFO"]["NAME"]
     TUTORS_NAME_ID_MAP = config["TUTORS"]
-    CONTENT_REC_PATH = f"/tmp/app/db/instead-db-tmp-for-{USER_NAME}.txt"
+
     # The reason for the numerical conversion is to use timedelta to calculate the date
     # Because Using "today" "tomorrow" as argument is more understandable than 0,1
     if day == "" or day == "today":
@@ -40,15 +49,20 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
     logger.info("Search date: %s", date)
     # to extract lesson time
     time_re = re.compile(fr"[0-9]{{2}}:[0-9]{{2}}")
+    
+    last_message = ""
+    get_last_message = ("SELECT content_of_message "
+                       "FROM public.submit_messages "
+                       "ORDER BY submitted_time DESC LIMIT 1 ")
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(get_last_message)
+            res_get_last_message = cur.fetchone()
+            if res_get_last_message is not None:
+                last_message = res_get_last_message[0]
+    logger.info("前回のメッセージ: %s", last_message)
+
     message = ""
-    try:
-        with open(CONTENT_REC_PATH, mode="x") as f:
-            f.write("")
-            file_content = ""
-    except FileExistsError:
-        with open(CONTENT_REC_PATH) as fr:
-            file_content = fr.read()
-    logger.info("前回のメッセージ: %s", file_content)
     for name, id in TUTORS_NAME_ID_MAP.items():
         res = requests.get(f"{TUTORS_URL}{id}")
         # Date and word "予約可" are the conditions for reservation is possible
@@ -68,16 +82,22 @@ def main(day, max_lessons=20, config_file="conf/config.txt"):
         message += f"\n{TUTORS_URL}{id} \n{lessons} \n"
     if message == "":
         message += "\n予約可能枠なし\n"
+    
     message += f"{SUBMIT_MESSAGE}\n"
     logger.info("今回のメッセージ:%s", message)
-    if message != file_content:
-        with open(CONTENT_REC_PATH, mode="w") as fw:
-            fw.write(message)
+    if message != last_message:
         # the upper case "TODAY","TOMORROW" looks better than the lower case "today", "tomorrow"
         res = post_line_notify(f"@{USER_NAME}" + message + day.upper(), TOKEN)
         # The HTTP response status code will be good a log to fix problem
         logger.info("LINE通知:%s", res)
-
+    
+    insert_new_message = ("INSERT INTO "
+          "submit_messages (username, content_of_message, submitted_time) "
+          "VALUES (%s, %s, current_timestamp);")
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(insert_new_message, (USER_NAME, message))
+        conn.commit()
 
 if __name__ == "__main__":
     import sys
