@@ -11,9 +11,19 @@ CREATE TABLE teachers(
   country varchar(40) NOT NULL
 );
 
-CREATE TABLE teacher_schedules(
+CREATE TABLE teacher_events(
   teacher_id varchar(6) NOT NULL,
-  slot_datetime timestamp NOT NULL,
-  opened_datetime timestamp NOT NULL,
-  primary key(teacher_id, slot_datetime)
+  slot_id integer NOT NULL,
+  event_id integer NOT NULL,
+  happend_on date NOT NULL
+);
+
+CREATE TABLE events(
+  id serial,
+  name text NOT NULL
+);
+
+CREATE TABLE slots(
+  id serial,
+  time text NOT NULL
 );
